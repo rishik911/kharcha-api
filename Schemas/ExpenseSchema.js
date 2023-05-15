@@ -7,6 +7,7 @@ export const newYearSchema = Joi.object({
 export const newMonthSchema = Joi.object({
   year: Joi.string().required(),
   monthName: Joi.string().required(),
+  total: Joi.number().required(),
 });
 
 export const expenseQueryParamSchema = Joi.object({

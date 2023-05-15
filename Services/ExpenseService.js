@@ -22,8 +22,12 @@ export const createNewYearService = async (serviceData) => {
 
 export const createNewMonthService = async (serviceData) => {
   try {
-    const { year, monthName } = serviceData;
-    const newMonth = new newMonthModel({ monthName, expenseDetails: [] });
+    const { year, monthName, total } = serviceData;
+    const newMonth = new newMonthModel({
+      monthName,
+      expenseDetails: [],
+      total,
+    });
     const yearData = await ExpenseModel.findById(year);
     if (!yearData) {
       throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_YEAR);
@@ -55,6 +59,7 @@ export const createNewExpenseService = async (serviceData, headers) => {
       if (monthIndex >= 0) {
         const newExpense = new newExpenseModel({ ...expense });
         yearData.months[monthIndex].expenseDetails.push(newExpense);
+        yearData.months[monthIndex].total += expense.amount;
         const newData = await yearData.save();
         updateUserExpenseProfileService(
           {
@@ -87,6 +92,7 @@ export const updateUserExpenseProfileService = async (serviceData, headers) => {
     const userDetails = await SignupModal.findById(userID.id);
     const userExpense = new userExpensesModel({ ...serviceData });
     userDetails.expenses.push(userExpense);
+    userDetails.totalAmount += serviceData.amount;
     const response = await userDetails.save();
     return convertToObject(response);
   } catch (e) {
@@ -101,6 +107,26 @@ export const getAllExpenseDataService = async (serviceData) => {
     const yearData = await ExpenseModel.findById(year);
 
     return convertToObject(yearData);
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+export const getMonthlyExpenses = async (serviceData) => {
+  try {
+    const { year, month } = serviceData;
+    const yearData = await ExpenseModel.findById(year);
+    if (yearData && yearData?.months) {
+      const monthData = yearData.months.find((curr) => {
+        return curr?.monthName === month;
+      });
+      if (!monthData) {
+        throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_MONTH);
+      }
+      return convertToObject(monthData);
+    } else {
+      throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_YEAR);
+    }
   } catch (e) {
     throw new Error(e);
   }

@@ -13,7 +13,7 @@ export const createUserService = async (serviceData) => {
       throw new Error(CONSTANTS.AUTH_MESSAGES.DUPLICATE_EMAIL);
     }
     serviceData.password = await bcrypt.hash(serviceData?.password, 12);
-    const signUp = new SignUpModal({ ...serviceData });
+    const signUp = new SignUpModal({ ...serviceData, totalAmount: 0 });
     let result = await signUp.save();
     return convertToObject(result);
   } catch (e) {

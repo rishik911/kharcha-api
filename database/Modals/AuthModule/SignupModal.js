@@ -13,6 +13,8 @@ const SignUpModal = mongoose.Schema(
     firstName: String,
     lastName: String,
     expenses: [userExpenseModel],
+    totalAmount : Number
+
   },
   {
     timestamp: true,

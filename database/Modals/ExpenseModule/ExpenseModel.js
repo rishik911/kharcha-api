@@ -23,6 +23,7 @@ const MonthlyExpenseModel = mongoose.Schema(
   {
     monthName: String,
     expenseDetails: [expenseModel],
+    total: Number,
   },
   {
     timestamp: true,

@@ -17,6 +17,7 @@ import {
   createNewMonthController,
   createNewYearController,
   getExpenseDataController,
+  getMnthlyExpenseController,
 } from "../Controller/ExpenseCOntroller.js";
 
 const Router = express.Router();
@@ -37,8 +38,10 @@ Router.post(
 
 Router.get("/:year", verifyAuthToken, getExpenseDataController);
 
+Router.get("/:year/:month", verifyAuthToken, getMnthlyExpenseController);
+
 Router.post(
-  "/expense",
+  "/createExpense",
   verifyAuthToken,
   validateRequestBody(newExpenseSchema),
   createNewExpenseController

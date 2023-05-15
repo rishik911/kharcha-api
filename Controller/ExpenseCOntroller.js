@@ -3,6 +3,7 @@ import {
   createNewMonthService,
   createNewYearService,
   getAllExpenseDataService,
+  getMonthlyExpenses,
 } from "../Services/ExpenseService.js";
 import { CONSTANTS } from "../Utils/Constants.js";
 
@@ -60,6 +61,21 @@ export const getExpenseDataController = async (req, res) => {
       (serverResponse.body = yearResponse);
   } catch (e) {
     console.log("error in fetching expenses==>", e);
+    serverResponse.status = 401;
+    serverResponse.message = e.message;
+  }
+  return res.status(serverResponse.status).send(serverResponse);
+};
+
+export const getMnthlyExpenseController = async (req, res) => {
+  const serverResponse = { ...CONSTANTS.DEFAULT_RESPONSE };
+  try {
+    let yearResponse = await getMonthlyExpenses(req?.params);
+    serverResponse.status = 200;
+    (serverResponse.message = CONSTANTS.EXPENSE_MESSAGES.FETCHED_EXPENSE),
+      (serverResponse.body = yearResponse);
+  } catch (e) {
+    console.log("error in fetching monthy expense==>", e);
     serverResponse.status = 401;
     serverResponse.message = e.message;
   }
