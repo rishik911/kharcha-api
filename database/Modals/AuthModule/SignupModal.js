@@ -1,11 +1,18 @@
 import mongoose, { mongo } from "mongoose";
 
+const userExpenseModel = mongoose.Schema({
+  amount: Number,
+  expenseType: String,
+  date: String,
+});
+
 const SignUpModal = mongoose.Schema(
   {
     email: String,
     password: String,
     firstName: String,
     lastName: String,
+    expenses: [userExpenseModel],
   },
   {
     timestamp: true,
@@ -19,6 +26,11 @@ const SignUpModal = mongoose.Schema(
       },
     },
   }
+);
+
+export const userExpensesModel = mongoose.model(
+  "userExpense",
+  userExpenseModel
 );
 
 export default mongoose.model("signUp", SignUpModal);

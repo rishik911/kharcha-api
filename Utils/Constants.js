@@ -16,4 +16,14 @@ export const CONSTANTS = {
   STATUS: {
     EXPIRED_TOKEN: 402,
   },
+  EXPENSE_MESSAGES: {
+    YEAR_ADDED: "Added a new year",
+    NEW_MONTH_ADDED: "Added a new Month",
+    ADDED_NEW_EXPENSE: "Added a new expense",
+    FETCHED_EXPENSE: "Fetched all expenses",
+    DUPLICATE_MONTH: "The month has already been added!",
+    DUPLICATE_YEAR: "The year has already been added!",
+    INVALID_YEAR: "Invalid year!",
+    INVALID_MONTH: "Invalid month!",
+  },
 };

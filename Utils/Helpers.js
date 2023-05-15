@@ -11,6 +11,6 @@ export const convertToObject = (data) => {
 };
 export const isQuerryIdInvalid = (id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
-   // throw new Error(constants.INVALI_ID);
+    // throw new Error(constants.INVALI_ID);
   }
 };
