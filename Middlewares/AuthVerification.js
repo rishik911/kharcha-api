@@ -16,7 +16,7 @@ export const verifyAuthToken = async (req, res, next) => {
       }
     } else throw new Error(CONSTANTS.AUTH_MESSAGES.PROVIDE_AUTH_TOKEN);
   } catch (e) {
-    response.status = 401;
+    response.status = 405;
     response.message = e.message;
     res.status(response.status).send(response);
   }
