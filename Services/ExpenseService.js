@@ -100,11 +100,9 @@ export const updateUserExpenseProfileService = async (serviceData, headers) => {
   }
 };
 
-export const getAllExpenseDataService = async (serviceData) => {
+export const getAllExpenseDataService = async () => {
   try {
-    const { year } = serviceData;
-
-    const yearData = await ExpenseModel.findById(year);
+    const yearData = await ExpenseModel.find({});
 
     return convertToObject(yearData);
   } catch (e) {

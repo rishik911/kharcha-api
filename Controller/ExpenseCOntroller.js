@@ -55,7 +55,7 @@ export const createNewExpenseController = async (req, res) => {
 export const getExpenseDataController = async (req, res) => {
   const serverResponse = { ...CONSTANTS.DEFAULT_RESPONSE };
   try {
-    let yearResponse = await getAllExpenseDataService(req?.params);
+    let yearResponse = await getAllExpenseDataService();
     serverResponse.status = 200;
     (serverResponse.message = CONSTANTS.EXPENSE_MESSAGES.FETCHED_EXPENSE),
       (serverResponse.body = yearResponse);

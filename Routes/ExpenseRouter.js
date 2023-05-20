@@ -36,7 +36,7 @@ Router.post(
   createNewMonthController
 );
 
-Router.get("/:year", verifyAuthToken, getExpenseDataController);
+Router.get("/", verifyAuthToken, getExpenseDataController);
 
 Router.get("/:year/:month", verifyAuthToken, getMnthlyExpenseController);
 
