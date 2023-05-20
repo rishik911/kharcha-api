@@ -5,6 +5,7 @@ const expenseModel = mongoose.Schema(
     expenseType: String,
     amount: Number,
     spendBy: String,
+    spendOn: String,
   },
   {
     timestamp: true,

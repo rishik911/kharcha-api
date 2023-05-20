@@ -21,5 +21,6 @@ export const newExpenseSchema = Joi.object({
     expenseType: Joi.string().required(),
     amount: Joi.number().required(),
     spendBy: Joi.string().required(),
+    spendOn: Joi.string().required(),
   }),
 });
