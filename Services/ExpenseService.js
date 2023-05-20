@@ -12,6 +12,11 @@ import jwt from "jsonwebtoken";
 export const createNewYearService = async (serviceData) => {
   try {
     const { year } = serviceData;
+    const yearData = await ExpenseModel.findOne({ year: year });
+  
+    if (yearData) {
+      throw new Error(CONSTANTS.EXPENSE_MESSAGES.YEAR_EXISTS);
+    }
     const newExpenseYear = new ExpenseModel({ year, months: [] });
     const result = await newExpenseYear.save();
     return convertToObject(result);

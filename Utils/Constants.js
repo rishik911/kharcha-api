@@ -18,6 +18,7 @@ export const CONSTANTS = {
   },
   EXPENSE_MESSAGES: {
     YEAR_ADDED: "Added a new year",
+    YEAR_EXISTS: ":Year alrady exists",
     NEW_MONTH_ADDED: "Added a new Month",
     ADDED_NEW_EXPENSE: "Added a new expense",
     FETCHED_EXPENSE: "Fetched all expenses",
