@@ -58,8 +58,10 @@ export const getUserProfileService = async (serviceData) => {
       ?.split("Bearer")[1]
       .trim();
     const isValid = jwt.verify(token, process.env.SECRET_KEY);
+
     if (isValid?.id) {
-      const userData = await SignUpModal.findById(isValid.id);
+      const { id } = isValid;
+      const userData = await SignUpModal.findById(id);
       if (userData) return convertToObject(userData);
       else {
         throw new Error(CONSTANTS.AUTH_MESSAGES.INVALID_AUTH_TOKEN);

@@ -9,11 +9,13 @@ import { verifyAuthToken } from "../Middlewares/AuthVerification.js";
 import {
   expenseQueryParamSchema,
   newExpenseSchema,
+  newGroupSchema,
   newMonthSchema,
   newYearSchema,
 } from "../Schemas/ExpenseSchema.js";
 import {
   createNewExpenseController,
+  createNewGroupController,
   createNewMonthController,
   createNewYearController,
   getExpenseDataController,
@@ -21,6 +23,13 @@ import {
 } from "../Controller/ExpenseCOntroller.js";
 
 const Router = express.Router();
+
+Router.post(
+  "/group",
+  verifyAuthToken,
+  validateRequestBody(newGroupSchema),
+  createNewGroupController
+);
 
 Router.post(
   "/year",
@@ -36,9 +45,13 @@ Router.post(
   createNewMonthController
 );
 
-Router.get("/", verifyAuthToken, getExpenseDataController);
+Router.get("/:groupName", verifyAuthToken, getExpenseDataController);
 
-Router.get("/:year/:month", verifyAuthToken, getMnthlyExpenseController);
+Router.get(
+  "/:groupName/:year/:month",
+  verifyAuthToken,
+  getMnthlyExpenseController
+);
 
 Router.post(
   "/createExpense",

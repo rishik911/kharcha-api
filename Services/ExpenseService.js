@@ -6,20 +6,46 @@ import SignupModal, {
 import ExpenseModel, {
   newExpenseModel,
   newMonthModel,
+  newGroupModel,
 } from "../database/Modals/ExpenseModule/ExpenseModel.js";
 import jwt from "jsonwebtoken";
 
+export const createNewGroupService = async (serviceData) => {
+  try {
+    const { groupName } = serviceData;
+    const groupData = await newGroupModel.findOne({ groupName: groupName });
+    if (groupData) {
+      throw new Error(CONSTANTS.EXPENSE_MESSAGES.GROUP_EXISTS);
+    }
+    const newGroupData = new newGroupModel({ groupName, years: [] });
+    const result = await newGroupData.save();
+    return convertToObject(result);
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
 export const createNewYearService = async (serviceData) => {
   try {
-    const { year } = serviceData;
-    const yearData = await ExpenseModel.findOne({ year: year });
-  
-    if (yearData) {
+    const { year, groupName } = serviceData;
+
+    const groupData = await newGroupModel.findOne({ groupName });
+
+    if (!groupData) {
+      throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_GROUP);
+    }
+
+    const isYearPresent = groupData?.years?.find((curr) => {
+      return year === curr?.year;
+    });
+    if (isYearPresent) {
       throw new Error(CONSTANTS.EXPENSE_MESSAGES.YEAR_EXISTS);
     }
     const newExpenseYear = new ExpenseModel({ year, months: [] });
-    const result = await newExpenseYear.save();
-    return convertToObject(result);
+    groupData.years.push(newExpenseYear);
+    const newGroup = await groupData.save();
+
+    return convertToObject(newGroup);
   } catch (e) {
     throw new Error(e);
   }
@@ -27,24 +53,35 @@ export const createNewYearService = async (serviceData) => {
 
 export const createNewMonthService = async (serviceData) => {
   try {
-    const { year, monthName, total } = serviceData;
+    const { year, monthName, total, groupName } = serviceData;
     const newMonth = new newMonthModel({
       monthName,
       expenseDetails: [],
       total,
     });
-    const yearData = await ExpenseModel.findById(year);
-    if (!yearData) {
+
+    const groupData = await newGroupModel.findOne({ groupName });
+
+    if (!groupData) {
+      throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_GROUP);
+    }
+
+    const yearData = groupData?.years?.findIndex((curr) => {
+      return year === curr?.year;
+    });
+    if (yearData < 0) {
       throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_YEAR);
     }
-    const isMonthPresent = yearData?.months?.find(
+
+    const isMonthPresent = groupData?.years?.[yearData]?.months?.find(
       (month) => monthName === month?.monthName
     );
     if (isMonthPresent) {
       throw new Error(CONSTANTS.EXPENSE_MESSAGES.DUPLICATE_MONTH);
     }
-    yearData.months.push(newMonth);
-    const newData = await yearData.save();
+    groupData.years[yearData].months.push(newMonth);
+
+    const newData = await groupData.save();
     return convertToObject(newData);
   } catch (e) {
     throw new Error(e);
@@ -53,33 +90,42 @@ export const createNewMonthService = async (serviceData) => {
 
 export const createNewExpenseService = async (serviceData, headers) => {
   try {
-    const { year, month, expense } = serviceData;
+    const { year, month, expense, groupName } = serviceData;
+    const groupData = await newGroupModel.findOne({ groupName });
 
-    const yearData = await ExpenseModel.findById(year);
+    if (!groupData) {
+      throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_GROUP);
+    }
 
-    if (yearData && yearData?.months) {
-      const monthIndex = yearData.months.findIndex((curr) => {
-        return curr?.monthName === month;
-      });
-      if (monthIndex >= 0) {
-        const newExpense = new newExpenseModel({ ...expense });
-        yearData.months[monthIndex].expenseDetails.push(newExpense);
-        yearData.months[monthIndex].total += expense.amount;
-        const newData = await yearData.save();
-        updateUserExpenseProfileService(
-          {
-            amount: expense.amount,
-            expenseType: expense.expenseType,
-            date: new Date(),
-          },
-          headers
-        );
-        return convertToObject(newData);
-      } else {
-        throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_MONTH);
-      }
-    } else {
+    const yearData = groupData?.years?.findIndex((curr) => {
+      return year === curr?.year;
+    });
+    if (yearData < 0) {
       throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_YEAR);
+    }
+
+    const monthIndex = groupData?.years?.[yearData]?.months?.findIndex(
+      (curr) => month === curr?.monthName
+    );
+
+    if (monthIndex >= 0) {
+      const newExpense = new newExpenseModel({ ...expense });
+      groupData.years[yearData].months[monthIndex].expenseDetails.push(
+        newExpense
+      );
+      groupData.years[yearData].months[monthIndex].total += expense.amount;
+      const newData = await groupData.save();
+      updateUserExpenseProfileService(
+        {
+          amount: expense.amount,
+          expenseType: expense.expenseType,
+          date: new Date(),
+        },
+        headers
+      );
+      return convertToObject(newData);
+    } else {
+      throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_MONTH);
     }
   } catch (e) {
     throw new Error(e);
@@ -96,6 +142,7 @@ export const updateUserExpenseProfileService = async (serviceData, headers) => {
     }
     const userDetails = await SignupModal.findById(userID.id);
     const userExpense = new userExpensesModel({ ...serviceData });
+    console.log(userDetails);
     userDetails.expenses.push(userExpense);
     userDetails.totalAmount += serviceData.amount;
     const response = await userDetails.save();
@@ -105,9 +152,10 @@ export const updateUserExpenseProfileService = async (serviceData, headers) => {
   }
 };
 
-export const getAllExpenseDataService = async () => {
+export const getAllExpenseDataService = async (serviceData) => {
   try {
-    const yearData = await ExpenseModel.find({});
+    const { groupName } = serviceData;
+    const yearData = await newGroupModel.findOne({ groupName: groupName });
 
     return convertToObject(yearData);
   } catch (e) {
@@ -117,12 +165,19 @@ export const getAllExpenseDataService = async () => {
 
 export const getMonthlyExpenses = async (serviceData) => {
   try {
-    const { year, month } = serviceData;
-    const yearData = await ExpenseModel.findById(year);
-    if (yearData && yearData?.months) {
-      const monthData = yearData.months.find((curr) => {
-        return curr?.monthName === month;
+    const { groupName, year, month } = serviceData;
+    const groupData = await newGroupModel.findOne({ groupName: groupName });
+    if (groupData && groupData?.years) {
+      const yearData = groupData.years.find((curr) => {
+        return curr?.year === year;
       });
+      if (!yearData) {
+        throw new Error(CONSTANTS.INVALID_YEAR);
+      }
+      console.log(yearData);
+      const monthData = yearData.months.find(
+        (curr) => curr.monthName === month
+      );
       if (!monthData) {
         throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_MONTH);
       }

@@ -19,8 +19,9 @@ export const CONSTANTS = {
     EXPIRED_TOKEN: 402,
   },
   EXPENSE_MESSAGES: {
+    GROUP_EXISTS: "Group already exists",
     YEAR_ADDED: "Added a new year",
-    YEAR_EXISTS: ":Year alrady exists",
+    YEAR_EXISTS: ":Year already exists",
     NEW_MONTH_ADDED: "Added a new Month",
     ADDED_NEW_EXPENSE: "Added a new expense",
     FETCHED_EXPENSE: "Fetched all expenses",
@@ -28,5 +29,7 @@ export const CONSTANTS = {
     DUPLICATE_YEAR: "The year has already been added!",
     INVALID_YEAR: "Invalid year!",
     INVALID_MONTH: "Invalid month!",
+    INVALID_GROUP: "Invalid group!",
+    GROUP_ADDED: "Group added!",
   },
 };

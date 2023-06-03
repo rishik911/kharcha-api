@@ -57,7 +57,28 @@ const ExpenseModel = mongoose.Schema(
   }
 );
 
+const GroupModel = mongoose.Schema(
+  {
+    groupName: String,
+    years: [ExpenseModel],
+  },
+
+  {
+    timestamp: true,
+    toObject: {
+      transform: function (doc, ret, options) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  }
+);
+
 export const newMonthModel = mongoose.model("monthly", MonthlyExpenseModel);
 export const newExpenseModel = mongoose.model("newExpense", expenseModel);
+
+export const newGroupModel = mongoose.model("newGroup", GroupModel);
 
 export default mongoose.model("expenseModel", ExpenseModel);
