@@ -20,6 +20,7 @@ const SignUpModal = mongoose.Schema(
     expenses: [userExpenseModel],
     totalAmount: Number,
     image: imageModal,
+    groupName: String,
   },
   {
     timestamp: true,

@@ -12,6 +12,7 @@ export const ProfileUpdateSchema = Joi.object({
   firstName: Joi.string(),
   lastName: Joi.string(),
   image: Joi.any(),
+  groupName: Joi.string(),
 });
 
 export const UploadProfileImageSchema = Joi.object({
