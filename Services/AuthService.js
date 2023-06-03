@@ -18,8 +18,7 @@ export const createUserService = async (serviceData) => {
     const signUp = new SignUpModal({
       ...serviceData,
       totalAmount: 0,
-      firstName: "",
-      lastName: "",
+
       image: null,
     });
     let result = await signUp.save();

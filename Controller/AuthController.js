@@ -3,7 +3,6 @@ import {
   getUserProfileService,
   loginUserService,
   updateProfileService,
-
 } from "../Services/AuthService.js";
 import { CONSTANTS } from "../Utils/Constants.js";
 
