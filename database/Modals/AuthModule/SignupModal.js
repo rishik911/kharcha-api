@@ -6,6 +6,11 @@ const userExpenseModel = mongoose.Schema({
   date: String,
 });
 
+const imageModal = mongoose.Schema({
+  imageName: String,
+  data: Buffer,
+});
+
 const SignUpModal = mongoose.Schema(
   {
     email: String,
@@ -13,8 +18,8 @@ const SignUpModal = mongoose.Schema(
     firstName: String,
     lastName: String,
     expenses: [userExpenseModel],
-    totalAmount : Number
-
+    totalAmount: Number,
+    image: imageModal,
   },
   {
     timestamp: true,
@@ -34,5 +39,7 @@ export const userExpensesModel = mongoose.model(
   "userExpense",
   userExpenseModel
 );
+
+export const imageModel = mongoose.model("imageUpload", imageModal);
 
 export default mongoose.model("signUp", SignUpModal);

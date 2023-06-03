@@ -1,4 +1,6 @@
-import SignUpModal from "../database/Modals/AuthModule/SignupModal.js";
+import SignUpModal, {
+  imageModel,
+} from "../database/Modals/AuthModule/SignupModal.js";
 import { CONSTANTS } from "../Utils/Constants.js";
 import bcrypt from "bcrypt";
 import { convertToObject } from "../Utils/Helpers.js";
@@ -13,7 +15,13 @@ export const createUserService = async (serviceData) => {
       throw new Error(CONSTANTS.AUTH_MESSAGES.DUPLICATE_EMAIL);
     }
     serviceData.password = await bcrypt.hash(serviceData?.password, 12);
-    const signUp = new SignUpModal({ ...serviceData, totalAmount: 0 });
+    const signUp = new SignUpModal({
+      ...serviceData,
+      totalAmount: 0,
+      firstName: "",
+      lastName: "",
+      image: null,
+    });
     let result = await signUp.save();
     return convertToObject(result);
   } catch (e) {
@@ -53,6 +61,29 @@ export const getUserProfileService = async (serviceData) => {
     const isValid = jwt.verify(token, process.env.SECRET_KEY);
     if (isValid?.id) {
       const userData = await SignUpModal.findById(isValid.id);
+      if (userData) return convertToObject(userData);
+      else {
+        throw new Error(CONSTANTS.AUTH_MESSAGES.INVALID_AUTH_TOKEN);
+      }
+    }
+  } catch (e) {
+    throw new Error(e);
+  }
+};
+
+export const updateProfileService = async (serviceData) => {
+  try {
+    const { body } = serviceData;
+
+    const token = serviceData?.headers?.authorization
+      ?.split("Bearer")[1]
+      .trim();
+    const isValid = jwt.verify(token, process.env.SECRET_KEY);
+    if (isValid?.id) {
+      const userData = await SignUpModal.findByIdAndUpdate(isValid.id, body, {
+        new: true,
+      });
+      console.log(body);
       if (userData) return convertToObject(userData);
       else {
         throw new Error(CONSTANTS.AUTH_MESSAGES.INVALID_AUTH_TOKEN);

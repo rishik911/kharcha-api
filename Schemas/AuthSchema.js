@@ -5,4 +5,15 @@ export const SignUpSchema = Joi.object({
   password: Joi.string().required(),
   firstName: Joi.string(),
   lastName: Joi.string(),
+  image: Joi.any(),
+});
+
+export const ProfileUpdateSchema = Joi.object({
+  firstName: Joi.string(),
+  lastName: Joi.string(),
+  image: Joi.any(),
+});
+
+export const UploadProfileImageSchema = Joi.object({
+  image: Joi.any().required(),
 });

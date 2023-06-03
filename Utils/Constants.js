@@ -12,6 +12,8 @@ export const CONSTANTS = {
     WRONG_PASSWORD: "The password is incorrect",
     INVALID_AUTH_TOKEN: "The token is invalid or exprire",
     PROVIDE_AUTH_TOKEN: "The authorization token is required!",
+    PROFILE_UPDATED: "Profile updated!",
+    IMAGE_UPLOADED: "profile image uploaded!",
   },
   STATUS: {
     EXPIRED_TOKEN: 402,
