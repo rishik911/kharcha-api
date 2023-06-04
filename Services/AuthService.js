@@ -5,6 +5,7 @@ import { CONSTANTS } from "../Utils/Constants.js";
 import bcrypt from "bcrypt";
 import { convertToObject } from "../Utils/Helpers.js";
 import jwt from "jsonwebtoken";
+import { newGroupModel } from "../database/Modals/ExpenseModule/ExpenseModel.js";
 
 export const createUserService = async (serviceData) => {
   try {
@@ -79,6 +80,13 @@ export const updateProfileService = async (serviceData) => {
     const token = serviceData?.headers?.authorization
       ?.split("Bearer")[1]
       .trim();
+    const { groupName = null } = body;
+    if (groupName) {
+      const isGroupName = await newGroupModel.findOne({ groupName: groupName });
+      if (!isGroupName) {
+        throw new Error(CONSTANTS.EXPENSE_MESSAGES.INVALID_GROUP);
+      }
+    }
     const isValid = jwt.verify(token, process.env.SECRET_KEY);
     if (isValid?.id) {
       const userData = await SignUpModal.findByIdAndUpdate(isValid.id, body, {
