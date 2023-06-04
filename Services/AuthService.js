@@ -44,7 +44,7 @@ export const loginUserService = async (serviceData) => {
       throw new Error(CONSTANTS.AUTH_MESSAGES.WRONG_PASSWORD);
     }
     const token = jwt.sign({ id: userData._id }, process.env.SECRET_KEY, {
-      expiresIn: "1d",
+      expiresIn: "1y",
     });
     return { token };
   } catch (e) {
@@ -84,7 +84,6 @@ export const updateProfileService = async (serviceData) => {
       const userData = await SignUpModal.findByIdAndUpdate(isValid.id, body, {
         new: true,
       });
-      console.log(body);
       if (userData) return convertToObject(userData);
       else {
         throw new Error(CONSTANTS.AUTH_MESSAGES.INVALID_AUTH_TOKEN);
